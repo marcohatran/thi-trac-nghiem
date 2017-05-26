@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ThiTracNghiem" GeneratedClassName="ConnectionSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DefaultCatalog" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TRACNGHIEM</Value>
+    </Setting>
+    <Setting Name="DefaultDatasource" Type="System.String" Scope="User">
+      <Value Profile="(Default)">LEO-PC\SERVER0</Value>
+    </Setting>
+    <Setting Name="login" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sa</Value>
+    </Setting>
+    <Setting Name="pwd" Type="System.String" Scope="User">
+      <Value Profile="(Default)">123</Value>
+    </Setting>
+    <Setting Name="support" Type="System.String" Scope="User">
+      <Value Profile="(Default)">support</Value>
+    </Setting>
+    <Setting Name="sppwd" Type="System.String" Scope="User">
+      <Value Profile="(Default)">123</Value>
+    </Setting>
+    <Setting Name="sinhvien" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sv</Value>
+    </Setting>
+    <Setting Name="svpwd" Type="System.String" Scope="User">
+      <Value Profile="(Default)">123</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
