@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace ThiTracNghiem.PL
 {
-    public partial class ucCBThi2 : UserControl
+    public partial class UCCBThi : UserControl
     {
         private frmThi frmThi;
-        public ucCBThi2(frmThi frmThi)
+        public UCCBThi(frmThi frmThi)
         {
             InitializeComponent();
             this.frmThi = frmThi;

@@ -1,6 +1,6 @@
 ﻿namespace ThiTracNghiem.PL
 {
-    partial class ucCBThi2
+    partial class UCCBThi
     {
         /// <summary> 
         /// Required designer variable.

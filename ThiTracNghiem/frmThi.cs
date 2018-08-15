@@ -26,7 +26,7 @@ namespace ThiTracNghiem
 
         private void frmThi_Load(object sender, EventArgs e)
         {
-            ucCBThi2 ucChuanBi = new ucCBThi2(this) { Dock = DockStyle.Fill };
+            UCCBThi ucChuanBi = new UCCBThi(this) { Dock = DockStyle.Fill };
             this.Controls.Add(ucChuanBi);
         }
     }
