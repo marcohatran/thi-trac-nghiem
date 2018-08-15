@@ -14,7 +14,7 @@ namespace ThiTracNghiem
 {
     public partial class frmKhoa : Form
     {
-        private Stack<Command> _commands;
+        private KhoaDAO khoaDAO;
         public frmKhoa()
         {
             InitializeComponent();
@@ -23,7 +23,7 @@ namespace ThiTracNghiem
         private void frmKhoa_Load(object sender, EventArgs e)
         {
             btnReload.PerformClick();
-            _commands = new Stack<Command>();
+            khoaDAO = new KhoaDAO();
             if (DBAccess.nhom == "Truong")
             {
                 btnThem.Enabled = false;
@@ -55,27 +55,18 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = true;
         }
 
-        private int Execute(string _operator, DKhoa _operand, DKhoa oldstate)
-        {
-            Command command = new KhoaCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
             DataRow red = gridView1.GetFocusedDataRow();
-            DKhoa KHTrongBang = new DKhoa
+            DKhoa khoa = new DKhoa
             {
                 MaKhoa = red["Mã khoa"].ToString(),
                 TenKhoa = red["Tên khoa"].ToString(),
                 MaCS = DBAccess.donVi
             };
 
-            int code = Execute("delete", KHTrongBang, null);
+            int code = khoaDAO.RemoveKhoa(khoa);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá khoa thành công");
@@ -111,14 +102,14 @@ namespace ThiTracNghiem
 
             if (textBox1.Enabled)
             {
-                DKhoa KHTrongForm = new DKhoa
+                DKhoa khoa = new DKhoa
                 {
                     MaKhoa = textBox1.Text.Trim().ToUpper(),
                     TenKhoa = textBox2.Text.Trim(),
                     MaCS = DBAccess.donVi
                 };
 
-                int code = Execute("insert", KHTrongForm, null);
+                int code = khoaDAO.CreateKhoa(khoa);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -133,13 +124,7 @@ namespace ThiTracNghiem
             else
             {
                 DataRow red = gridView1.GetFocusedDataRow();
-                DKhoa KHTrongBang = new DKhoa
-                {
-                    MaKhoa = red["Mã khoa"].ToString(),
-                    TenKhoa = red["Tên khoa"].ToString(),
-                    MaCS = DBAccess.donVi
-                };
-                DKhoa KHTrongForm = new DKhoa
+                DKhoa khoa = new DKhoa
                 {
                     MaKhoa = textBox1.Text.Trim().ToUpper(),
                     TenKhoa = textBox2.Text.Trim(),
@@ -147,7 +132,7 @@ namespace ThiTracNghiem
                 };
 
 
-                int code = Execute("update", KHTrongForm, KHTrongBang);
+                int code = khoaDAO.UpdateKhoa(khoa);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -181,24 +166,6 @@ namespace ThiTracNghiem
             textBox1.Enabled = false;
             btnHuyBo.Enabled = false;
             btnLuu.Enabled = false;
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void btnHuyBo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

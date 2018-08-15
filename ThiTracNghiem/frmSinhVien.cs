@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ThiTracNghiem.CMD;
 using ThiTracNghiem.DTO;
@@ -14,7 +8,7 @@ namespace ThiTracNghiem
 {
     public partial class frmSinhVien : Form
     {
-        private Stack<Command> _commands;
+        private SinhVienDAO sinhVienDAO;
         private DataTable lop;
 
         public frmSinhVien()
@@ -24,7 +18,7 @@ namespace ThiTracNghiem
 
         private void frmSinhVien_Load(object sender, EventArgs e)
         {
-            _commands = new Stack<Command>();
+            sinhVienDAO = new SinhVienDAO();
             if (DBAccess.nhom == "Truong")
             {
                 btnThem.Enabled = false;
@@ -95,15 +89,6 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = true;
         }
 
-        private int Execute(string _operator, DSinhVien _operand, DSinhVien oldstate)
-        {
-            Command command = new SinhVienCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
@@ -118,7 +103,7 @@ namespace ThiTracNghiem
                 MaLop = lop.Select(string.Format("tenlop ='{0}'", red["Tên lớp"].ToString()))[0][0].ToString()
             };
 
-            int code = Execute("delete", KHTrongBang, null);
+            int code = sinhVienDAO.RemoveSinhVien(KHTrongBang);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá sinh viên thành công");
@@ -183,7 +168,7 @@ namespace ThiTracNghiem
                     MaLop = lop.Select(string.Format("tenlop ='{0}'", comboBox2.Text.Trim()))[0][0].ToString()
                 };
 
-                int code = Execute("insert", KHTrongForm, null);
+                int code = sinhVienDAO.CreateSinhVien(KHTrongForm);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -198,15 +183,6 @@ namespace ThiTracNghiem
             else
             {
                 DataRow red = gridView1.GetFocusedDataRow();
-                DSinhVien KHTrongBang = new DSinhVien
-                {
-                    MaSV = red["Mã sinh viên"].ToString(),
-                    Ho = red["Họ"].ToString(),
-                    Ten = red["Tên"].ToString(),
-                    NgaySinh = DateTime.Parse(red["Ngày sinh"].ToString()),
-                    DiaChi = red["Địa chỉ"].ToString(),
-                    MaLop = lop.Select(string.Format("tenlop ='{0}'", red["Tên lớp"].ToString()))[0][0].ToString()
-                };
                 DSinhVien KHTrongForm = new DSinhVien
                 {
                     MaSV = textBox1.Text.Trim().ToUpper(),
@@ -217,7 +193,7 @@ namespace ThiTracNghiem
                     MaLop = lop.Select(string.Format("tenlop ='{0}'", comboBox2.Text.Trim()))[0][0].ToString()
                 };
 
-                int code = Execute("update", KHTrongForm, KHTrongBang);
+                int code = sinhVienDAO.UpdateSinhVien(KHTrongForm);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -261,24 +237,6 @@ namespace ThiTracNghiem
             btnLuu.Enabled = false;
             AddLopToCombo();
             FocusedRowChanged();
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void btnHuyBo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

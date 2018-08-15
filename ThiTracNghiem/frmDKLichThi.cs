@@ -14,7 +14,7 @@ namespace ThiTracNghiem
 {
     public partial class frmDKLichThi : Form
     {
-        private Stack<Command> _commands;
+        private DKiThiDAO dKiThiDAO;
         private DataTable lop;
         private DataTable monHoc;
         private DataTable giaoVien;
@@ -27,7 +27,7 @@ namespace ThiTracNghiem
         private void frmDKLichThi_Load(object sender, EventArgs e)
         {
             btnReload.PerformClick();
-            _commands = new Stack<Command>();
+            dKiThiDAO = new DKiThiDAO();
             dateTimePicker1.CustomFormat = "dd-MM-yyyy";
             switch (DBAccess.nhom)
             {
@@ -39,14 +39,6 @@ namespace ThiTracNghiem
                 case "Truong":
                     btnThem.Enabled = false;
                     btnXoa.Enabled = false;
-                    /*comboBox1.Enabled = false;
-                    comboBox2.Enabled = false;
-                    comboBox3.Enabled = false;
-                    comboBox4.Enabled = false;
-                    comboBox5.Enabled = false;
-                    dateTimePicker1.Enabled = false;
-                    textBox1.Enabled = false;
-                    textBox2.Enabled = false;*/
                     break;
             }
         }
@@ -137,15 +129,6 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = true;
         }
 
-        private int Execute(string _operator, DGVDangKy _operand, DGVDangKy oldstate)
-        {
-            Command command = new DKiThiCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
@@ -159,7 +142,7 @@ namespace ThiTracNghiem
             {
                 maGVTrongBang = giaoVien.Select(string.Format("hoten ='{0}'", red["Giáo viên"].ToString()))[0][0].ToString();
             }
-            DGVDangKy KHTrongBang = new DGVDangKy
+            DGVDangKy dkThi = new DGVDangKy
             {
                 TrinhDo = red["Trình độ"].ToString()[0],
                 ThoiGian = Int32.Parse(red["Thời gian"].ToString()),
@@ -171,7 +154,7 @@ namespace ThiTracNghiem
                 MaGV = maGVTrongBang
             };
 
-            int code = Execute("delete", KHTrongBang, null);
+            int code = dKiThiDAO.RemoveDangKy(dkThi);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá đăng ký thi thành công");
@@ -260,7 +243,7 @@ namespace ThiTracNghiem
                 {
                     maGVTrongForm = giaoVien.Select(string.Format("hoten ='{0}'", comboBox2.Text))[0][0].ToString();
                 }
-                DGVDangKy KHTrongForm = new DGVDangKy
+                DGVDangKy dkThi = new DGVDangKy
                 {
                     TrinhDo = comboBox4.Text[0],
                     ThoiGian = Int32.Parse(textBox1.Text.Trim()),
@@ -271,7 +254,7 @@ namespace ThiTracNghiem
                     MaMonHoc = monHoc.Select(string.Format("[Tên môn học] ='{0}'", comboBox1.Text.Trim()))[0][0].ToString(),
                     MaGV = maGVTrongForm
                 };
-                int code = Execute("insert", KHTrongForm, null);
+                int code = dKiThiDAO.CreateDangKy(dkThi);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -305,17 +288,6 @@ namespace ThiTracNghiem
                 {
                     maGVTrongBang = giaoVien.Select(string.Format("hoten ='{0}'", red["Giáo viên"].ToString()))[0][0].ToString();
                 }
-                DGVDangKy KHTrongBang = new DGVDangKy
-                {
-                    TrinhDo = red["Trình độ"].ToString()[0],
-                    ThoiGian = Int32.Parse(red["Thời gian"].ToString()),
-                    SoCauThi = Int32.Parse(red["Số câu"].ToString()),
-                    NgayThi = DateTime.Parse(red["Ngày thi"].ToString()),
-                    Lan = Int32.Parse(red["Lần"].ToString()),
-                    MaLop = lop.Select(string.Format("tenlop ='{0}'", red["Tên lớp"].ToString()))[0][0].ToString(),
-                    MaMonHoc = monHoc.Select(string.Format("[Tên môn học] ='{0}'", red["Môn học"].ToString()))[0][0].ToString(),
-                    MaGV = maGVTrongBang
-                };
                 if (DBAccess.nhom == "giao vien")
                 {
                     maGVTrongForm = DBAccess.id;
@@ -324,7 +296,7 @@ namespace ThiTracNghiem
                 {
                     maGVTrongForm = giaoVien.Select(string.Format("hoten ='{0}'", comboBox2.Text))[0][0].ToString();
                 }
-                DGVDangKy KHTrongForm = new DGVDangKy
+                DGVDangKy dkThi = new DGVDangKy
                 {
                     TrinhDo = comboBox4.Text[0],
                     ThoiGian = Int32.Parse(textBox1.Text.Trim()),
@@ -336,7 +308,7 @@ namespace ThiTracNghiem
                     MaGV = maGVTrongForm
                 };
 
-                int code = Execute("update", KHTrongForm, KHTrongBang);
+                int code = dKiThiDAO.UpdateDangKy(dkThi);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -402,24 +374,6 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = false;
             btnLuu.Enabled = false;
 
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void btnHuyBo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

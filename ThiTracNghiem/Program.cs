@@ -9,7 +9,7 @@ namespace ThiTracNghiem
 {
     static class Program
     {
-        public static frmMain frmChinh;
+        public static FrmMain frmChinh;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -18,7 +18,7 @@ namespace ThiTracNghiem
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            frmChinh = new frmMain();
+            frmChinh = new FrmMain();
             Application.Run(frmChinh);
         }
     }

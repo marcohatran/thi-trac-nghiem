@@ -1,6 +1,6 @@
 ﻿namespace ThiTracNghiem
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.

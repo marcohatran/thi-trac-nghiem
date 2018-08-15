@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace ThiTracNghiem
 {
-    public partial class frmBangDiem : Form
+    public partial class FrmBangDiem : Form
     {
         private DataTable lop;
         private DataTable monHoc;
-        public frmBangDiem()
+        public FrmBangDiem()
         {
             InitializeComponent();
         }

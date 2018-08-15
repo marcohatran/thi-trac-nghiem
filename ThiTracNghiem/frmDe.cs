@@ -9,7 +9,7 @@ namespace ThiTracNghiem
 {
     public partial class frmDe : Form
     {
-        private Stack<Command> _commands;
+        private DeDAO deDAO;
         private DataTable monHoc;
         private DataTable giaoVien;
         private bool isThem;
@@ -21,7 +21,7 @@ namespace ThiTracNghiem
         private void frmDe_Load(object sender, EventArgs e)
         {
             btnReload.PerformClick();
-            _commands = new Stack<Command>();
+            deDAO = new DeDAO();
             switch (DBAccess.nhom)
             {
                 case "giao vien":
@@ -112,15 +112,6 @@ namespace ThiTracNghiem
             comboBox4.SelectedIndex = 0;
         }
 
-        private int Execute(string _operator, DDe _operand, DDe oldstate)
-        {
-            Command command = new DeCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
@@ -134,7 +125,7 @@ namespace ThiTracNghiem
             {
                 maGVTrongBang = giaoVien.Select(string.Format("hoten ='{0}'", red["Giáo viên"].ToString()))[0][0].ToString();
             }
-            DDe MHTrongBang = new DDe
+            DDe de = new DDe
             {
                 CauHoi = Int32.Parse(red["Câu hỏi"].ToString()),
                 NoiDung = red["Nội dung"].ToString(),
@@ -148,7 +139,7 @@ namespace ThiTracNghiem
                 MaGV = maGVTrongBang
             };
 
-            int code = Execute("delete", MHTrongBang, null);
+            int code = deDAO.RemoveDe(de);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá câu hỏi thành công");
@@ -212,7 +203,7 @@ namespace ThiTracNghiem
                 {
                     maGVTrongForm = giaoVien.Select(string.Format("hoten ='{0}'", comboBox4.Text))[0][0].ToString();
                 }
-                DDe MHTrongForm = new DDe
+                DDe de = new DDe
                 {
                     NoiDung = textBox1.Text.Trim(),
                     A = textBox2.Text.Trim(),
@@ -224,7 +215,7 @@ namespace ThiTracNghiem
                     DapAn = comboBox3.Text[0],
                     MaGV = maGVTrongForm
                 };
-                int code = Execute("insert", MHTrongForm, null);
+                int code = deDAO.CreateDe(de);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -249,19 +240,6 @@ namespace ThiTracNghiem
                 {
                     maGVTrongBang = giaoVien.Select(string.Format("hoten ='{0}'", red["Giáo viên"].ToString()))[0][0].ToString();
                 }
-                DDe MHTrongBang = new DDe
-                {
-                    CauHoi = Int32.Parse(red["Câu hỏi"].ToString()),
-                    NoiDung = red["Nội dung"].ToString(),
-                    A = red["A"].ToString(),
-                    B = red["B"].ToString(),
-                    C = red["C"].ToString(),
-                    D = red["D"].ToString(),
-                    MaMonHoc = monHoc.Select(string.Format("tenmh ='{0}'", red["Môn học"].ToString()))[0][0].ToString(),
-                    TrinhDo = red["Trình độ"].ToString()[0],
-                    DapAn = red["Đáp án"].ToString()[0],
-                    MaGV = maGVTrongBang
-                };
                 if (DBAccess.nhom == "giao vien")
                 {
                     maGVTrongForm = DBAccess.id;
@@ -270,7 +248,7 @@ namespace ThiTracNghiem
                 {
                     maGVTrongForm = giaoVien.Select(string.Format("hoten ='{0}'", comboBox4.Text))[0][0].ToString();
                 }
-                DDe MHTrongForm = new DDe
+                DDe de = new DDe
                 {
                     CauHoi = Int32.Parse(red["Câu hỏi"].ToString()),
                     NoiDung = textBox1.Text.Trim(),
@@ -283,7 +261,7 @@ namespace ThiTracNghiem
                     DapAn = comboBox3.Text[0],
                     MaGV = maGVTrongForm
                 };
-                int code = Execute("update", MHTrongForm, MHTrongBang);
+                int code = deDAO.UpdateDe(de);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -339,24 +317,6 @@ namespace ThiTracNghiem
             }
             btnHuyBo.Enabled = false;
             btnLuu.Enabled = false;
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void btnHuyBo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

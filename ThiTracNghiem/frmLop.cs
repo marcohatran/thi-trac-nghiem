@@ -14,7 +14,7 @@ namespace ThiTracNghiem
 {
     public partial class frmLop : Form
     {
-        private Stack<Command> _commands;
+        private LopDAO lopDAO;
         private DataTable khoa;
 
         public frmLop()
@@ -25,7 +25,7 @@ namespace ThiTracNghiem
         private void frmLop_Load(object sender, EventArgs e)
         {
             btnReload.PerformClick();
-            _commands = new Stack<Command>();
+            lopDAO = new LopDAO();
             if (DBAccess.nhom == "Truong")
             {
                 btnThem.Enabled = false;
@@ -81,26 +81,17 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = true;
         }
 
-        private int Execute(string _operator, DLop _operand, DLop oldstate)
-        {
-            Command command = new LopCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
             DataRow red = gridView1.GetFocusedDataRow();
-            DLop LopTrongBang = new DLop
+            DLop lop = new DLop
             {
                 MaLop = red["Mã lớp"].ToString(),
                 TenLop = red["Tên lớp"].ToString(),
                 MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", red["Tên khoa"].ToString()))[0][0].ToString()
             };
-            int code = Execute("delete", LopTrongBang, null);
+            int code = lopDAO.RemoveLop(lop);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá lớp thành công");
@@ -144,14 +135,14 @@ namespace ThiTracNghiem
             {
                 DataRow red = gridView1.GetFocusedDataRow();
                 string maLopTrongForm = khoa.Select(string.Format("[Tên khoa] ='{0}'", comboBox3.Text))[0][0].ToString();
-                DLop LopTrongForm = new DLop
+                DLop lop = new DLop
                 {
                     MaLop = textBox1.Text.Trim(),
                     TenLop = textBox2.Text.Trim(),
                     MaKhoa = maLopTrongForm
                 };
 
-                int code = Execute("insert", LopTrongForm, null);
+                int code = lopDAO.CreateLop(lop);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -166,20 +157,14 @@ namespace ThiTracNghiem
             else
             {
                 DataRow red = gridView1.GetFocusedDataRow();
-                DLop LopTrongBang = new DLop
-                {
-                    MaLop = red["Mã lớp"].ToString(),
-                    TenLop = red["Tên lớp"].ToString(),
-                    MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", red["Tên khoa"].ToString()))[0][0].ToString()
-                };
-                DLop LopTrongForm = new DLop
+                DLop lop = new DLop
                 {
                     MaLop = textBox1.Text.Trim(),
                     TenLop = textBox2.Text.Trim(),
                     MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", comboBox3.Text))[0][0].ToString()
                 };
 
-                int code = Execute("update", LopTrongForm, LopTrongBang);
+                int code = lopDAO.UpdateLop(lop);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -216,24 +201,6 @@ namespace ThiTracNghiem
             textBox1.Enabled = false;
             btnHuyBo.Enabled = false;
             btnLuu.Enabled = false;
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void btnHuyBo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

@@ -9,10 +9,6 @@ namespace ThiTracNghiem
     class DBAccess
     {
         public static SqlConnection connection;
-        /*public static string dataSource = "";
-        public static string initCatalog = "";
-        public static string username = "";
-        public static string password = "";*/
 
         public static string dataSource = ConnectionSettings.Default.DefaultDatasource;
         public static string initCatalog = ConnectionSettings.Default.DefaultCatalog;

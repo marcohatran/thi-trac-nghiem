@@ -15,7 +15,7 @@ namespace ThiTracNghiem
 {
     public partial class frmGiaoVien : Form
     {
-        private Stack<Command> _commands;
+        private GiaoVienDAO giaoVienDAO;
         private DataTable khoa;
 
         public frmGiaoVien()
@@ -26,7 +26,7 @@ namespace ThiTracNghiem
         private void frmGiaoVien_Load(object sender, EventArgs e)
         {
             btnReload.PerformClick();
-            _commands = new Stack<Command>();
+            giaoVienDAO = new GiaoVienDAO();
             if (DBAccess.nhom == "Truong")
             {
                 btnThem.Enabled = false;
@@ -92,20 +92,11 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = true;
         }
 
-        private int Execute(string _operator, DGiaoVien _operand, DGiaoVien oldstate)
-        {
-            Command command = new GiaoVienCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
             DataRow red = gridView1.GetFocusedDataRow();
-            DGiaoVien GVTrongBang = new DGiaoVien
+            DGiaoVien giaoVien = new DGiaoVien
             {
                 MaGV = red["Mã giáo viên"].ToString(),
                 Ho = red["Họ"].ToString(),
@@ -115,7 +106,7 @@ namespace ThiTracNghiem
                 MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", red["Tên khoa"].ToString()))[0][0].ToString()
             };
 
-            int code = Execute("delete", GVTrongBang, null);
+            int code = giaoVienDAO.RemoveGiaoVien(giaoVien);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá giáo viên thành công");
@@ -164,7 +155,7 @@ namespace ThiTracNghiem
 
             if (textBox1.Enabled)
             {
-                DGiaoVien GVTrongForm = new DGiaoVien
+                DGiaoVien giaoVien = new DGiaoVien
                 {
                     MaGV = textBox1.Text.Trim().ToUpper(),
                     Ho = textBox2.Text.Trim().ToUpper(),
@@ -174,7 +165,7 @@ namespace ThiTracNghiem
                     MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", comboBox2.Text.Trim()))[0][0].ToString()
                 };
 
-                int code = Execute("insert", GVTrongForm, null);
+                int code = giaoVienDAO.CreateGiaoVien(giaoVien);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -189,16 +180,7 @@ namespace ThiTracNghiem
             else
             {
                 DataRow red = gridView1.GetFocusedDataRow();
-                DGiaoVien GVTrongBang = new DGiaoVien
-                {
-                    MaGV = red["Mã giáo viên"].ToString(),
-                    Ho = red["Họ"].ToString(),
-                    Ten = red["Tên"].ToString(),
-                    HocVi = red["Học vị"].ToString(),
-                    DiaChi = red["Địa chỉ"].ToString(),
-                    MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", red["Tên khoa"].ToString()))[0][0].ToString()
-                };
-                DGiaoVien GVTrongForm = new DGiaoVien
+                DGiaoVien giaoVien = new DGiaoVien
                 {
                     MaGV = textBox1.Text.Trim().ToUpper(),
                     Ho = textBox2.Text.Trim().ToUpper(),
@@ -208,7 +190,7 @@ namespace ThiTracNghiem
                     MaKhoa = khoa.Select(string.Format("[Tên khoa] ='{0}'", comboBox2.Text.Trim()))[0][0].ToString()
                 };
 
-                int code = Execute("update", GVTrongForm, GVTrongBang);
+                int code = giaoVienDAO.UpdateGiaoVien(giaoVien);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -251,24 +233,6 @@ namespace ThiTracNghiem
             textBox1.Enabled = false;
             btnHuyBo.Enabled = false;
             btnLuu.Enabled = false;
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void btnHuyBo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

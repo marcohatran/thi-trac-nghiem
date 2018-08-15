@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ThiTracNghiem
 {
-    public partial class frmMain : Form
+    public partial class FrmMain : Form
     {
-        public frmMain()
+        public FrmMain()
         {
             InitializeComponent();
         }
@@ -58,12 +51,26 @@ namespace ThiTracNghiem
                 MessageBox.Show("Trong CSDL không có cơ sở nào. ");
                 return;
             }
+            /*foreach (DataRow s in chiNhanh.Rows)
+            {
+                Connection cnn = new Connection()
+                {
+                    InitCatalog = s["subscriber_db"].ToString(),
+                    DataSource = s["subscriber"].ToString(),
+                    Name = s["NAME"].ToString()
+
+                };
+                DBAccess.CnnList.Add(cnn);
+            }*/
             using (StreamWriter file = new StreamWriter(@"data.csv"))
             {
                 foreach (DataRow s in chiNhanh.Rows)
                 {
                     Connection cnn = new Connection()
                     {
+                        /*InitCatalog = s["INITCATALOG"].ToString(),
+                        DataSource = s["datasource"].ToString(),
+                        Name = s["ten"].ToString()*/
                         InitCatalog = s["subscriber_db"].ToString(),
                         DataSource = s["subscriber"].ToString(),
                         Name = s["NAME"].ToString()
@@ -170,11 +177,11 @@ namespace ThiTracNghiem
 
         private void btnMonHoc_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            Form frm = this.CheckExists(typeof(frmMonHoc));
+            Form frm = this.CheckExists(typeof(FrmMonHoc));
             if (frm != null) frm.Activate();
             else
             {
-                frmMonHoc f = new frmMonHoc() { MdiParent = this, Text = "Quản lý môn học" };
+                FrmMonHoc f = new FrmMonHoc() { MdiParent = this, Text = "Quản lý môn học" };
                 f.Show();
             }
         }
@@ -258,11 +265,11 @@ namespace ThiTracNghiem
 
         private void btnBangDiem_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            Form frm = this.CheckExists(typeof(frmBangDiem));
+            Form frm = this.CheckExists(typeof(FrmBangDiem));
             if (frm != null) frm.Activate();
             else
             {
-                frmBangDiem f = new frmBangDiem() { MdiParent = this, Text = "Xem bảng điểm" };
+                FrmBangDiem f = new FrmBangDiem() { MdiParent = this, Text = "Xem bảng điểm" };
                 f.Show();
             }
         }

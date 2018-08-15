@@ -7,10 +7,10 @@ using ThiTracNghiem.DTO;
 
 namespace ThiTracNghiem
 {
-    public partial class frmMonHoc : Form
+    public partial class FrmMonHoc : Form
     {
-        private Stack<Command> _commands;
-        public frmMonHoc()
+        private MonHocDAO monHocDAO;
+        public FrmMonHoc()
         {
             InitializeComponent();
         }
@@ -18,7 +18,7 @@ namespace ThiTracNghiem
         private void frmMonHoc_Load(object sender, EventArgs e)
         {
             btnReload.PerformClick();
-            _commands = new Stack<Command>();
+            monHocDAO = new MonHocDAO();
             if (DBAccess.nhom == "Truong")
             {
                 btnThem.Enabled = false;
@@ -37,22 +37,13 @@ namespace ThiTracNghiem
             btnHuyBo.Enabled = true;
         }
 
-        private int Execute(string _operator, DMonHoc _operand, DMonHoc oldstate)
-        {
-            Command command = new MonHocCommand(_operator, _operand, oldstate);
-            int code = command.Execute();
-            _commands.Push(command);
-            btnUndo.Enabled = true;
-            return code;
-        }
-
         private void btnXoa_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             btnXoa.Enabled = false;
             DataRow red = gridView1.GetFocusedDataRow();
-            DMonHoc MHTrongBang = new DMonHoc { MaMH = red["Mã môn học"].ToString(), TenMH = red["Tên môn học"].ToString() };
+            DMonHoc monHoc = new DMonHoc { MaMH = red["Mã môn học"].ToString(), TenMH = red["Tên môn học"].ToString() };
 
-            int code = Execute("delete", MHTrongBang, null);
+            int code = monHocDAO.RemoveMonHoc(monHoc);
             if (code == 0)
             {
                 //MessageBox.Show("Xoá thành công");
@@ -88,8 +79,8 @@ namespace ThiTracNghiem
 
             if (textBox1.Enabled)
             {
-                DMonHoc MHTrongForm = new DMonHoc { MaMH = textBox1.Text.Trim().ToUpper(), TenMH = textBox2.Text.Trim() };
-                int code = Execute("insert", MHTrongForm, null);
+                DMonHoc monHoc = new DMonHoc { MaMH = textBox1.Text.Trim().ToUpper(), TenMH = textBox2.Text.Trim() };
+                int code = monHocDAO.CreateMonHoc(monHoc);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -104,9 +95,11 @@ namespace ThiTracNghiem
             else
             {
                 DataRow red = gridView1.GetFocusedDataRow();
-                DMonHoc MHTrongBang = new DMonHoc { MaMH = red["Mã môn học"].ToString(), TenMH = red["Tên môn học"].ToString() };
-                DMonHoc MHTrongForm = new DMonHoc { MaMH = textBox1.Text.Trim().ToUpper(), TenMH = textBox2.Text.Trim() };
-                int code = Execute("update", MHTrongForm, MHTrongBang);
+                DMonHoc monHoc = new DMonHoc {
+                    MaMH = textBox1.Text.Trim().ToUpper(),
+                    TenMH = textBox2.Text.Trim()
+                };
+                int code = monHocDAO.UpdateMonHoc(monHoc);
                 if (code == 0)
                 {
                     btnReload.PerformClick();
@@ -140,24 +133,6 @@ namespace ThiTracNghiem
             textBox1.Enabled = false;
             btnHuyBo.Enabled = false;
             btnLuu.Enabled = false;
-        }
-
-        private void btnUndo_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-            if (_commands.Count > 0)
-            {
-                Command command = _commands.Pop();
-                int code = command.UnExecute();
-                if (code == 0)
-                {
-                    btnReload.PerformClick();
-                    //MessageBox.Show("Phục hồi thành công");
-                }
-                else
-                    MessageBox.Show("Phục hồi thất bại.");
-                if (_commands.Count == 0)
-                    btnUndo.Enabled = false;
-            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

@@ -12,7 +12,7 @@ namespace ThiTracNghiem {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     internal sealed partial class ConnectionSettings : global::System.Configuration.ApplicationSettingsBase {
         
         private static ConnectionSettings defaultInstance = ((ConnectionSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new ConnectionSettings())));
@@ -37,7 +37,7 @@ namespace ThiTracNghiem {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("LEO-PC\\SERVER0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("LEO-PC")]
         public string DefaultDatasource {
             get {
                 return ((string)(this["DefaultDatasource"]));
@@ -73,7 +73,7 @@ namespace ThiTracNghiem {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("support")]
+        [global::System.Configuration.DefaultSettingValueAttribute("sa")]
         public string support {
             get {
                 return ((string)(this["support"]));
@@ -97,7 +97,7 @@ namespace ThiTracNghiem {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("sv")]
+        [global::System.Configuration.DefaultSettingValueAttribute("sa")]
         public string sinhvien {
             get {
                 return ((string)(this["sinhvien"]));
