@@ -197,11 +197,11 @@
     <Compile Include="PL\UCCBiThiThu.Designer.cs">
       <DependentUpon>UCCBiThiThu.cs</DependentUpon>
     </Compile>
-    <Compile Include="PL\ucCBThi2.cs">
+    <Compile Include="PL\UCCBThi.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PL\ucCBThi2.Designer.cs">
-      <DependentUpon>ucCBThi2.cs</DependentUpon>
+    <Compile Include="PL\UCCBThi.Designer.cs">
+      <DependentUpon>UCCBThi.cs</DependentUpon>
     </Compile>
     <Compile Include="PL\UCThi.cs">
       <SubType>UserControl</SubType>
@@ -277,8 +277,8 @@
     <EmbeddedResource Include="PL\UCCBiThiThu.resx">
       <DependentUpon>UCCBiThiThu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PL\ucCBThi2.resx">
-      <DependentUpon>ucCBThi2.cs</DependentUpon>
+    <EmbeddedResource Include="PL\UCCBThi.resx">
+      <DependentUpon>UCCBThi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PL\UCThi.resx">
       <DependentUpon>UCThi.cs</DependentUpon>
